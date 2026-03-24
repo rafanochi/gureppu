@@ -1,6 +1,7 @@
 use clap::Parser;
 use std::io::prelude::*;
-use std::io::BufReader;
+use std::io::{BufReader, Error};
+use std::string::String;
 use std::fs::File;
 
 #[derive(Parser, Debug)]
@@ -15,17 +16,11 @@ fn main() {
     let file = File::open(&args.path).expect("couldn't read the file");
     let reader = BufReader::new(file);
 
-    let mut line = String::new();
+    let result: Vec<String> = reader
+        .lines()
+        .filter(|x: &Result<String, Error>| x.as_ref().unwrap().contains(&args.pattern))
+        .map(|x| x.unwrap()).collect();
 
-    for mut line in reader.lines() {
-         if (&mut line).as_mut().expect("Couldn't read the LINE").contains(&args.pattern) {
-            println!("{}", line.unwrap());
-        }
-    }
-
+    println!("{:?}", result);
     println!("{:?}", args);
 }
-
-
-
-
