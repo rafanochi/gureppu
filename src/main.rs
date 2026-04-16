@@ -1,5 +1,7 @@
 use anyhow::{Context, Result};
 use clap::Parser;
+use log::info;
+use std::env::args;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::prelude::*;
@@ -11,10 +13,15 @@ use std::usize;
 struct CliArguments {
     pattern: String,
     path: std::path::PathBuf,
+    #[command(flatten)]
+    verbosity: clap_verbosity_flag::Verbosity,
 }
 
 fn main() -> Result<()> {
     let args = CliArguments::parse();
+
+    env_logger::Builder::new().filter_level(args.verbosity.into()).init();
+    info!("Starting up Gureppu");
 
     // let stdout = io::stdout();
     // let mut handle = stdout.lock();
@@ -39,6 +46,8 @@ fn main() -> Result<()> {
         pb.inc(1);
     }
     pb.finish_with_message("done");
+
+    info!("Finish Gureppu");
 
     Ok(())
 }
