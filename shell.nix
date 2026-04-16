@@ -18,6 +18,11 @@ in
       clippy
       rust-analyzer
       cargo-watch
+      # rustup
+
+      rustPlatform.bindgenHook
+
+      # pkg-config
 
       # Other packages here
       # openssl
@@ -25,10 +30,14 @@ in
       # ...
     ];
 
-    # RUST_BACKTRACE = "full";
-    # RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+    strictDeps = true;
+
+    RUST_BACKTRACE = "full";
+    RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+    # RUSTC_VERSION = overrides.toolchain.channel;
 
     shellHook = ''
-      # Extra steps to do while activating development shell
+      export PATH="''${CARGO_HOME:-~/.cargo}/bin":"$PATH"
+      # export PATH="''${RUSTUP_HOME:-~/.rustup}/toolchains/$RUSTC_VERSION-${pkgs.stdenv.hostPlatform.rust.rustcTarget}/bin":"$PATH"
     '';
   }

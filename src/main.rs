@@ -1,9 +1,11 @@
 use anyhow::{Context, Result};
 use clap::Parser;
+use std::fmt::format;
 use std::fs::File;
-use std::io::prelude::*;
+use std::io::{self, prelude::*, stdout};
 use std::io::{BufReader, Error};
 use std::string::String;
+use std::usize;
 
 #[derive(Parser, Debug)]
 struct CliArguments {
@@ -14,19 +16,24 @@ struct CliArguments {
 fn main() -> Result<()> {
     let args = CliArguments::parse();
 
+    let stdout = io::stdout();
+    let mut handle = stdout.lock();
+
     let file = File::open(&args.path)
         .with_context(|| format!("couldn't read file: {}", &args.path.display()))?;
 
     let reader = BufReader::new(file);
 
-    let result: Vec<String> = reader
+    let result: Vec<(usize, String)> = reader
         .lines()
-        .filter(|x: &Result<String, Error>| x.as_ref().unwrap().contains(&args.pattern))
-        .map(|x| x.unwrap())
+        .enumerate()
+        .filter(|(_, x)| x.as_ref().unwrap().contains(&args.pattern))
+        .map(|(i,x)| (i, x.unwrap()))
         .collect();
 
-    println!("{:?}", result);
-    println!("{:?}", args);
+    for line in result.iter()  {
+       writeln!(handle, "{} {}", (line.0 + 1), line.1); 
+    }
 
     Ok(())
 }
