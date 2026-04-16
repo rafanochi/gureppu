@@ -1,9 +1,8 @@
 use anyhow::{Context, Result};
 use clap::Parser;
-use std::fmt::format;
 use std::fs::File;
-use std::io::{self, prelude::*, stdout};
-use std::io::{BufReader, Error};
+use std::io::{self, prelude::*};
+use std::io::{BufReader};
 use std::string::String;
 use std::usize;
 
@@ -32,7 +31,7 @@ fn main() -> Result<()> {
         .collect();
 
     for line in result.iter()  {
-       writeln!(handle, "{} {}", (line.0 + 1), line.1); 
+       writeln!(handle, "{} {}", (line.0 + 1), line.1)?; 
     }
 
     Ok(())
